@@ -1,0 +1,1911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unified Data Warehouse Initiative - Interactive Presentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #020f20;
+            color: #DCDCDC;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 260px;
+            background: #020f20;
+            border-right: 1px solid #333333;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 30px 20px;
+            border-bottom: 1px solid #333333;
+            text-align: center;
+        }
+
+        .sidebar-header h2 {
+            color: #DCDCDC;
+            margin: 0;
+            font-size: 1.5em;
+        }
+
+        .sidebar-header p {
+            color: #888888;
+            margin: 5px 0 0 0;
+            font-size: 0.9em;
+        }
+
+        .sidebar-nav {
+            padding: 20px 0;
+            flex: 1;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 15px 25px;
+            color: #DCDCDC;
+            text-decoration: none;
+            font-size: 1em;
+            border-left: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: #020f20;
+            border-left-color: #DCDCDC;
+            color: #FFFFFF;
+        }
+
+        .nav-link.active {
+            background: #020f20;
+            border-left-color: #DCDCDC;
+            color: #FFFFFF;
+            font-weight: bold;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            margin-left: 260px;
+            padding: 40px;
+            flex: 1;
+            width: calc(100% - 260px);
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* Card Styles */
+        .card {
+            background: #DCDCDC;
+            color: #000000;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(255,255,255,0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+        }
+
+        .card h2 {
+            color: #000000;
+            margin-bottom: 20px;
+            font-size: 2em;
+            border-bottom: 2px solid #000000;
+            padding-bottom: 10px;
+        }
+
+        .card h3 {
+            color: #000000;
+            margin: 20px 0 10px 0;
+        }
+
+        .card p, .card li {
+            color: #111111;
+        }
+
+        /* Grids */
+        .problem-grid, .solution-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        /* Problem & Solution Cards */
+        .problem-card {
+            background: #020f20;
+            color: #DCDCDC;
+            border: 1px solid #ff6b6b;
+            padding: 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .problem-card:hover {
+            background: #1a0505;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.2);
+        }
+
+        .problem-card::before {
+            content: '⚠️';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 2em;
+            opacity: 0.2;
+        }
+
+        .problem-card h3 {
+            color: #ff6b6b;
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        .problem-card p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #DCDCDC;
+        }
+
+        .solution-card {
+            background: #020f20;
+            color: #DCDCDC;
+            border: 1px solid #51cf66;
+            padding: 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .solution-card:hover {
+            background: #051a05;
+            box-shadow: 0 10px 30px rgba(81, 207, 102, 0.2);
+        }
+
+        .solution-card::before {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 2em;
+            opacity: 0.2;
+            font-weight: bold;
+            color: #51cf66;
+        }
+
+        .solution-card h3 {
+            color: #51cf66;
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        .solution-card p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #DCDCDC;
+        }
+
+        /* Highlight Box */
+        .highlight-box {
+            background: #020f20;
+            color: #FFFFFF;
+            border: 1px solid #DCDCDC;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+        .highlight-box h3 {
+            color: #FFFFFF;
+            margin-bottom: 15px;
+        }
+
+        .highlight-box p {
+            color: #FFFFFF;
+        }
+
+        .highlight-box li {
+            color: #FFFFFF;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: #000000;
+            border: 1px solid #333333;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: scale(1.05);
+            border-color: #DCDCDC;
+        }
+
+        .stat-number {
+            font-size: 3em;
+            font-weight: bold;
+            color: #DCDCDC;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: #888888;
+            font-size: 1.1em;
+        }
+
+        /* Architecture Diagram */
+        .architecture-diagram {
+            background: #020f20;
+            padding: 30px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border: 1px solid #333333;
+        }
+
+        .layer {
+            background: #020f20;
+            border: 2px solid #DCDCDC;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .layer:hover {
+            box-shadow: 0 5px 15px rgba(220, 220, 220, 0.1);
+        }
+
+        .layer-title {
+            background: #020f20;
+            color: #DCDCDC;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-weight: bold;
+            border: 1px solid #DCDCDC;
+        }
+
+        .layer-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .component {
+            background: #1a1a1a;
+            border: 1px solid #555555;
+            padding: 15px;
+            border-radius: 8px;
+            min-width: 150px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #DCDCDC;
+        }
+
+        .component:hover {
+            background: #DCDCDC;
+            color: #000000;
+            border-color: #DCDCDC;
+            transform: scale(1.05);
+        }
+
+        .component h4 {
+            color: inherit;
+            margin-bottom: 5px;
+        }
+
+        .component p {
+            color: inherit;
+            font-size: 0.9em;
+        }
+
+        /* Flow Diagram */
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .flow-step {
+            background: #0a0a0a;
+            border: 2px solid #DCDCDC;
+            border-radius: 12px;
+            padding: 20px;
+            min-width: 200px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+            color: #FFFFFF;
+        }
+
+        .flow-step:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(220, 220, 220, 0.2);
+        }
+
+        .flow-step::after {
+            content: '→';
+            position: absolute;
+            right: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2em;
+            color: #FFFFFF;
+            font-weight: bold;
+        }
+
+        .flow-step:last-child::after {
+            display: none;
+        }
+
+        .flow-step h4 {
+            color: #FFFFFF;
+            margin-bottom: 10px;
+        }
+
+        .flow-step p {
+            color: #FFFFFF;
+        }
+
+        /* Schema Tables */
+        .schema-table {
+            background: #020f20;
+            border: 1px solid #333333;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            color: #DCDCDC;
+        }
+
+        .schema-table h4 {
+            background: #020f20;
+            color: #DCDCDC;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #333333;
+        }
+
+        .schema-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .schema-table th,
+        .schema-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #333333;
+            color: #DCDCDC;
+        }
+
+        .schema-table th {
+            background: #1a1a1a;
+            font-weight: bold;
+            color: #FFFFFF;
+        }
+
+        .schema-table tr:hover {
+            background: #1a1a1a;
+        }
+
+        .pk {
+            color: #d84f18;
+            font-weight: bold;
+        }
+
+        .fk {
+            color: #00BFFF;
+            font-weight: bold;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: #46ae05;
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin: 30px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .timeline-item:nth-child(odd) {
+            flex-direction: row;
+        }
+
+        .timeline-item:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .timeline-content {
+            background: #020f20;
+            border: 1px solid #333333;
+            padding: 20px;
+            border-radius: 10px;
+            width: 45%;
+            position: relative;
+            color: #DCDCDC;
+        }
+
+        .timeline-content::before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #DCDCDC;
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content::before {
+            right: -60px;
+        }
+
+        .timeline-item:nth-child(even) .timeline-content::before {
+            left: -60px;
+        }
+
+        .timeline-content h3 {
+            color: #FFFFFF;
+            margin-bottom: 10px;
+        }
+
+        .timeline-content li {
+            color: #FFFFFF;
+        }
+
+        .timeline-content p {
+            color: #FFFFFF;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .badge-warning {
+            background: #DCDCDC;
+            color: #000000;
+        }
+
+        /* Interactive Table (inside modals) */
+        .interactive-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .interactive-table th {
+            background: #020f20;
+            color: #FFFFFF;
+            padding: 15px;
+            text-align: left;
+            border: 1px solid #333333;
+        }
+
+        .interactive-table td {
+            padding: 12px;
+            border-bottom: 1px solid #333333;
+            color: #FFFFFF;
+        }
+
+        .interactive-table tr:hover {
+            background: #1a1a1a;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            animation: fadeIn 0.3s ease;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: #020f20;
+            border: 1px solid #333333;
+            margin: 20px auto;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 800px;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+            position: relative;
+            animation: slideDown 0.3s ease;
+            color: #FFFFFF;
+        }
+
+        .modal-content h2 {
+            color: #FFFFFF;
+            border-bottom: 1px solid #333333;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            position: sticky;
+            top: 0;
+            background: #020f20;
+            z-index: 10;
+            padding-top: 10px;
+        }
+
+        .modal-content h3 {
+            color: #FFFFFF;
+            margin-top: 15px;
+        }
+
+        .modal-content p, .modal-content li {
+            color: #FFFFFF;
+        }
+
+        .modal-content strong {
+            color: #FFFFFF;
+        }
+
+        .close {
+            position: sticky;
+            top: 15px;
+            right: 15px;
+            float: right;
+            font-size: 2em;
+            cursor: pointer;
+            color: #FFFFFF;
+            z-index: 20;
+            background: #020f20;
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            line-height: 40px;
+            border-radius: 50%;
+        }
+
+        .close:hover {
+            color: #DCDCDC;
+            background: #1a1a1a;
+        }
+
+        /* Code Blocks */
+        pre {
+            background: #000000;
+            color: #FFFFFF;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            border: 1px solid #333333;
+        }
+
+        code {
+            background: #000000;
+            color: #FFFFFF;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid #333333;
+            }
+            
+            .sidebar-nav {
+                display: flex;
+                flex-wrap: wrap;
+                padding: 10px;
+            }
+            
+            .nav-link {
+                padding: 10px 15px;
+                border-left: none;
+                border-bottom: 3px solid transparent;
+            }
+            
+            .nav-link.active {
+                border-left: none;
+                border-bottom-color: #DCDCDC;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 20px;
+            }
+            
+            .flow-step::after {
+                display: none;
+            }
+            
+            .timeline::before {
+                left: 20px;
+            }
+            
+            .timeline-item {
+                flex-direction: row !important;
+            }
+            
+            .timeline-content {
+                width: 80%;
+                margin-left: 40px;
+            }
+            
+            .timeline-content::before {
+                left: -30px !important;
+                right: auto !important;
+            }
+
+            .modal-content {
+                padding: 20px;
+                margin: 10px;
+                max-height: calc(100vh - 20px);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Password Protection Layer -->
+<div id="passwordLayer" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #020f20; z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column;">
+    <div style="text-align: center; padding: 40px; background: #0a0a0a; border: 2px solid #DCDCDC; border-radius: 15px; max-width: 400px;">
+        <h2 style="color: #DCDCDC; margin-bottom: 20px;">🔐 Authentication Required</h2>
+        <p style="color: #888888; margin-bottom: 20px;">Please enter the access keyword to continue</p>
+        <input type="password" id="passwordInput" placeholder="Enter keyword..." 
+               style="width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #333; border-radius: 8px; background: #020f20; color: #DCDCDC; font-size: 16px;">
+        <button onclick="checkPassword()" 
+                style="width: 100%; padding: 12px; background: #DCDCDC; color: #020f20; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: bold;">
+            Access
+        </button>
+        <p id="errorMsg" style="color: #ff6b6b; margin-top: 15px; display: none;">Incorrect keyword. Please try again.</p>
+    </div>
+</div>
+
+<script>
+// Password protection script
+function checkPassword() {
+    const password = document.getElementById('passwordInput').value;
+    const correctPassword = 'marathonmm';
+    
+    if (password === correctPassword) {
+        // Hide password layer
+        document.getElementById('passwordLayer').style.display = 'none';
+        // Store in session storage so it persists during the session
+        sessionStorage.setItem('authenticated', 'true');
+    } else {
+        // Show error message
+        document.getElementById('errorMsg').style.display = 'block';
+        // Shake animation
+        const input = document.getElementById('passwordInput');
+        input.style.animation = 'shake 0.5s';
+        setTimeout(() => {
+            input.style.animation = '';
+        }, 500);
+    }
+}
+
+// Check if already authenticated in this session
+window.onload = function() {
+    if (sessionStorage.getItem('authenticated') === 'true') {
+        document.getElementById('passwordLayer').style.display = 'none';
+    }
+    
+    // Allow Enter key to submit
+    document.getElementById('passwordInput').addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            checkPassword();
+        }
+    });
+    
+    // Focus on password input
+    document.getElementById('passwordInput').focus();
+};
+
+// Add shake animation
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-10px); }
+        75% { transform: translateX(10px); }
+    }
+`;
+document.head.appendChild(style);
+</script>
+<!-- End Password Protection Layer -->
+
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>Data Warehouse</h2>
+            <p>Initiative</p>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-link active" onclick="showSection('overview', this)">📊 Overview</a>
+            <a href="#" class="nav-link" onclick="showSection('problems', this)">⚠️ Current Problems</a>
+            <a href="#" class="nav-link" onclick="showSection('solution', this)">✅ Proposed Solution</a>
+            <a href="#" class="nav-link" onclick="showSection('architecture', this)">🏗️ Architecture</a>
+            <a href="#" class="nav-link" onclick="showSection('schema', this)">🗄️ Database Schema</a>
+            <a href="#" class="nav-link" onclick="showSection('roadmap', this)">📅 Implementation</a>
+        </nav>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <!-- Overview Section -->
+        <div id="overview" class="section active">
+            <div class="card">
+                <h2>Executive Summary</h2>
+                <p style="font-size: 1.2em; line-height: 1.8; margin-bottom: 20px;">
+                    First off, I try to assess the feasibility of unifying these <strong>5 Business Units</strong> (Mtech, MKitchen, Marathon Express, MTrading, ShweZay) 
+                    with fragmented data systems. This initiative will create a <strong>unified data warehouse</strong> to enable 
+                    <strong> Cross-BU </strong>analytics, standardized master data, and executive-level business intelligence.
+                </p>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">5</div>
+                        <div class="stat-label">Business Units</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">13</div>
+                        <div class="stat-label">Total BUs (Phase 1: 5)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">100%</div>
+                        <div class="stat-label">Data Consolidation</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">70%</div>
+                        <div class="stat-label">Faster Reporting</div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>🎯 Project Objectives</h3>
+                    <ul style="font-size: 1.1em; line-height: 1.8;">
+                        <li>Unify product SKUs across all Business Units</li>
+                        <li>Standardize Unit of Measure (UOM) conversions</li>
+                        <li>Consolidate Accounts Payable/Receivable for group-wide visibility</li>
+                        <li>Implement batch traceability and expiry tracking</li>
+                        <li>Enable cross-BU inventory optimization</li>
+                        <li>Build executive BI dashboards for data-driven decisions</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Problems Section -->
+        <div id="problems" class="section">
+            <div class="card">
+                <h2>⚠️ Current State Challenges</h2>
+                <p style="font-size: 1.1em; margin-bottom: 20px;">
+                    Click on each problem card to learn more about the specific challenges we face.
+                </p>
+
+                <div class="problem-grid">
+                    <div class="problem-card" onclick="showProblemDetail('sku')">
+                        <h3>SKU Mismatch</h3>
+                        <p>Same physical products have different SKUs across Business Units, making group-wide analysis impossible.</p>
+                    </div>
+
+                    <div class="problem-card" onclick="showProblemDetail('uom')">
+                        <h3>Weak UOM Mapping Standard</h3>
+                        <p>Different units of measure (pieces, cartons, pallets) need proper conversion mappings based on product keys.</p>
+                    </div>
+
+                    <div class="problem-card" onclick="showProblemDetail('ap_ar')">
+                        <h3>Separate AP/AR</h3>
+                        <p>Financial records kept separately by BU prevent consolidated cash flow visibility and supplier negotiation leverage.</p>
+                    </div>
+
+                    <div class="problem-card" onclick="showProblemDetail('batch')">
+                        <h3>Limited Batch Traceability</h3>
+                        <p>Batch and expiry tracking exists but is isolated per BU, preventing cross-BU optimization of expiring stock.</p>
+                    </div>
+
+                    <div class="problem-card" onclick="showProblemDetail('silos')">
+                        <h3>Data Silos</h3>
+                        <p>Each BU operates independently with no group-wide visibility into inventory, sales, or customer relationships.</p>
+                    </div>
+
+                    <div class="problem-card" onclick="showProblemDetail('finance_focus')">
+                        <h3>Finance-Focused System</h3>
+                        <p>DAS software emphasizes financial transactions but lacks operational workflows for ground-level adjustments.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Solution Section -->
+        <div id="solution" class="section">
+            <div class="card">
+                <h2>✅ Proposed Solution</h2>
+                
+
+                <div class="solution-grid">
+                    <div class="solution-card" onclick="showSolutionDetail('unified_sku')">
+                        <h3>Unified SKU System</h3>
+                        <p>Create a master product catalog with group-wide SKUs and mapping tables to translate BU-specific codes.</p>
+                    </div>
+
+                    <div class="solution-card" onclick="showSolutionDetail('uom_matrix')">
+                        <h3>Standard UOM Conversion</h3>
+                        <p>Implement a conversion matrix that standardizes all measurements to base units for accurate comparisons.</p>
+                    </div>
+
+                    <div class="solution-card" onclick="showSolutionDetail('consolidated_finance')">
+                        <h3>Consolidated AP/AR</h3>
+                        <p>Unify financial records to show total exposure per supplier/customer across all BUs for better negotiation.</p>
+                    </div>
+
+                    <div class="solution-card" onclick="showSolutionDetail('batch_tracking')">
+                        <h3>Enhanced Batch Tracking</h3>
+                        <p>Cross-BU batch visibility with FEFO (First Expired, First Out) logic and automated expiry alerts.</p>
+                    </div>
+
+                    <div class="solution-card" onclick="showSolutionDetail('cross_bu')">
+                        <h3>Cross-BU Analytics</h3>
+                        <p>Group-wide dashboards showing consolidated inventory, sales, and customer insights across all BUs.</p>
+                    </div>
+
+                    <div class="solution-card" onclick="showSolutionDetail('etl_pipeline')">
+                        <h3>Automated ETL Pipeline</h3>
+                        <p>Python-based data extraction, transformation, and loading with daily synchronization from DAS to analytics DB.</p>
+                    </div>
+                </div>
+
+                <div class="highlight-box" style="margin-top: 30px;">
+                    <h3>💡 Expected Benefits</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number">95%</div>
+                            <div class="stat-label">Data Accuracy</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">70%</div>
+                            <div class="stat-label">Faster Reporting</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">40%</div>
+                            <div class="stat-label">Less Manual Work</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">100%</div>
+                            <div class="stat-label">Group Visibility</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Architecture Section -->
+        <div id="architecture" class="section">
+            <div class="card">
+                <h2>🏗️ System Architecture</h2>
+                <p style="font-size: 1.1em; margin-bottom: 20px;">
+                    Our solution follows a layered architecture approach, separating source systems from analytics.
+                </p>
+
+                <div class="architecture-diagram">
+                    <div class="layer">
+                        <div class="layer-title">📱 Presentation Layer</div>
+                        <div class="layer-content">
+                            <div class="component" onclick="showComponentDetail('lookerstudio')">
+                                <h4>Looker Studio</h4>
+                                <p>Executive Dashboards</p>
+                            </div>
+                            <div class="component" onclick="showComponentDetail('python')">
+                                <h4>Python Scripts</h4>
+                                <p>Advanced Analytics</p>
+                            </div>
+                            <div class="component" onclick="showComponentDetail('excel')">
+                                <h4>Excel</h4>
+                                <p>Ad-hoc Reports</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layer">
+                        <div class="layer-title">📊 Analytics Layer</div>
+                        <div class="layer-content">
+                            <div class="component" onclick="showComponentDetail('dim_product')">
+                                <h4>dim_product</h4>
+                                <p>Product Master</p>
+                            </div>
+                            <div class="component" onclick="showComponentDetail('dim_customer')">
+                                <h4>dim_customer</h4>
+                                <p>Customer Master</p>
+                            </div>
+                            <div class="component" onclick="showComponentDetail('dim_supplier')">
+                                <h4>dim_supplier</h4>
+                                <p>Supplier Master</p>
+                            </div>
+                            <div class="component" onclick="showComponentDetail('fact_sales')">
+                                <h4>fact_sales</h4>
+                                <p>Sales Transactions</p>
+                            </div>
+                            <div class="component" onclick="showComponentDetail('fact_inventory')">
+                                <h4>fact_inventory</h4>
+                                <p>Inventory Levels</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layer">
+                        <div class="layer-title">⚙️ ETL Processing Layer</div>
+                        <div class="layer-content">
+                            <div class="component" onclick="showComponentDetail('python_etl')">
+                                <h4>Python Scripts</h4>
+                                <p>Data Extraction</p>
+                            </div>
+                            <div class="component" onclick="showComponentDetail('mapping')">
+                                <h4>Mapping Tables</h4>
+                                <p>SKU Translation</p>
+                            </div>
+                            <div class="component" onclick="showComponentDetail('uom_conversion')">
+                                <h4>UOM Conversion</h4>
+                                <p>Unit Standardization</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layer">
+                        <div class="layer-title">🗄️ Source Layer</div>
+                        <div class="layer-content">
+                            <div class="component" onclick="showComponentDetail('mtech')">
+                                <h4>Mtech</h4>
+                                <p>Software BU</p>
+                            </div>
+                            <div class="component" onclick="showComponentDetail('mkitchen')">
+                                <h4>Mkitchen</h4>
+                                <p>E-commerce</p>
+                            </div>
+                            <div class="component" onclick="showComponentDetail('marathon')">
+                                <h4>Marathon Express</h4>
+                                <p>Delivery</p>
+                            </div>
+                            <div class="component" onclick="showComponentDetail('mtrading')">
+                                <h4>MTrading</h4>
+                                <p>B2B Sales</p>
+                            </div>
+                            <div class="component" onclick="showComponentDetail('shwezay')">
+                                <h4>ShweZay</h4>
+                                <p>Retail</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="flow-diagram">
+                    <div class="flow-step">
+                        <h4>1. Extract</h4>
+                        <p>Pull data from DAS PostgreSQL</p>
+                    </div>
+                    <div class="flow-step">
+                        <h4>2. Transform</h4>
+                        <p>Apply mappings & conversions</p>
+                    </div>
+                    <div class="flow-step">
+                        <h4>3. Load</h4>
+                        <p>Insert into analytics schema</p>
+                    </div>
+                    <div class="flow-step">
+                        <h4>4. Visualize</h4>
+                        <p>Interactive dashboards</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Schema Section -->
+        <div id="schema" class="section">
+            <div class="card">
+                <h2>🗄️ Database Schema Design</h2>
+                <p style="font-size: 1.1em; margin-bottom: 20px;">
+                    Star schema design optimized for analytical queries and BI tools.
+                </p>
+
+                <h3>Dimension Tables</h3>
+                
+                <div class="schema-table">
+                    <h4>dim_product (Product Master)</h4>
+                    <table>
+                        <tr>
+                            <th>Column</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                        <tr>
+                            <td><span class="pk">PK</span> product_sk</td>
+                            <td>SERIAL</td>
+                            <td>Surrogate key</td>
+                        </tr>
+                        <tr>
+                            <td>clean_sku</td>
+                            <td>VARCHAR(50)</td>
+                            <td>Unified product code</td>
+                        </tr>
+                        <tr>
+                            <td>product_name</td>
+                            <td>VARCHAR(255)</td>
+                            <td>Product description</td>
+                        </tr>
+                        <tr>
+                            <td>base_uom</td>
+                            <td>VARCHAR(20)</td>
+                            <td>Standard unit (PCS, KG, L)</td>
+                        </tr>
+                        <tr>
+                            <td>category_id</td>
+                            <td>INT</td>
+                            <td>Product category</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="schema-table">
+                    <h4>dim_location (BU & Branches)</h4>
+                    <table>
+                        <tr>
+                            <th>Column</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                        <tr>
+                            <td><span class="pk">PK</span> location_sk</td>
+                            <td>SERIAL</td>
+                            <td>Surrogate key</td>
+                        </tr>
+                        <tr>
+                            <td>bu_name</td>
+                            <td>VARCHAR(50)</td>
+                            <td>Business Unit name</td>
+                        </tr>
+                        <tr>
+                            <td>branch_code</td>
+                            <td>VARCHAR(50)</td>
+                            <td>Shop/warehouse code</td>
+                        </tr>
+                        <tr>
+                            <td>branch_name</td>
+                            <td>VARCHAR(100)</td>
+                            <td>Branch description</td>
+                        </tr>
+                        <tr>
+                            <td>location_type</td>
+                            <td>VARCHAR(20)</td>
+                            <td>Warehouse/Retail/Transit</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="schema-table">
+                    <h4>dim_batch (Batch & Expiry Tracking)</h4>
+                    <table>
+                        <tr>
+                            <th>Column</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                        <tr>
+                            <td><span class="pk">PK</span> batch_sk</td>
+                            <td>SERIAL</td>
+                            <td>Surrogate key</td>
+                        </tr>
+                        <tr>
+                            <td>batch_number</td>
+                            <td>VARCHAR(50)</td>
+                            <td>Batch identifier</td>
+                        </tr>
+                        <tr>
+                            <td>manufacturing_date</td>
+                            <td>DATE</td>
+                            <td>Production date</td>
+                        </tr>
+                        <tr>
+                            <td>expiry_date</td>
+                            <td>DATE</td>
+                            <td>Expiration date</td>
+                        </tr>
+                        <tr>
+                            <td>days_to_expiry</td>
+                            <td>INT</td>
+                            <td>Calculated field</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <h3 style="margin-top: 30px;">Fact Tables</h3>
+
+                <div class="schema-table">
+                    <h4>fact_sales (Sales Transactions)</h4>
+                    <table>
+                        <tr>
+                            <th>Column</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                        <tr>
+                            <td><span class="pk">PK</span> sale_id</td>
+                            <td>SERIAL</td>
+                            <td>Transaction ID</td>
+                        </tr>
+                        <tr>
+                            <td><span class="fk">FK</span> date_sk</td>
+                            <td>DATE</td>
+                            <td>Transaction date</td>
+                        </tr>
+                        <tr>
+                            <td><span class="fk">FK</span> location_sk</td>
+                            <td>INT</td>
+                            <td>Which BU/Shop</td>
+                        </tr>
+                        <tr>
+                            <td><span class="fk">FK</span> product_sk</td>
+                            <td>INT</td>
+                            <td>Which product</td>
+                        </tr>
+                        <tr>
+                            <td><span class="fk">FK</span> customer_sk</td>
+                            <td>INT</td>
+                            <td>Which customer</td>
+                        </tr>
+                        <tr>
+                            <td><span class="fk">FK</span> batch_sk</td>
+                            <td>INT</td>
+                            <td>Which batch</td>
+                        </tr>
+                        <tr>
+                            <td>quantity_base_uom</td>
+                            <td>DECIMAL(15,4)</td>
+                            <td>Standardized quantity</td>
+                        </tr>
+                        <tr>
+                            <td>unit_price</td>
+                            <td>DECIMAL(15,4)</td>
+                            <td>Price per unit</td>
+                        </tr>
+                        <tr>
+                            <td>total_revenue</td>
+                            <td>DECIMAL(15,4)</td>
+                            <td>Total sale amount</td>
+                        </tr>
+                        <tr>
+                            <td>total_cost</td>
+                            <td>DECIMAL(15,4)</td>
+                            <td>Cost of goods sold</td>
+                        </tr>
+                        <tr>
+                            <td>gross_profit</td>
+                            <td>DECIMAL(15,4)</td>
+                            <td>Revenue - Cost</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="schema-table">
+                    <h4>fact_inventory_batch (Inventory by Batch)</h4>
+                    <table>
+                        <tr>
+                            <th>Column</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                        <tr>
+                            <td>date</td>
+                            <td>DATE</td>
+                            <td>Snapshot date</td>
+                        </tr>
+                        <tr>
+                            <td><span class="fk">FK</span> location_sk</td>
+                            <td>INT</td>
+                            <td>Warehouse/Shop</td>
+                        </tr>
+                        <tr>
+                            <td><span class="fk">FK</span> product_sk</td>
+                            <td>INT</td>
+                            <td>Product</td>
+                        </tr>
+                        <tr>
+                            <td><span class="fk">FK</span> batch_sk</td>
+                            <td>INT</td>
+                            <td>Batch number</td>
+                        </tr>
+                        <tr>
+                            <td>quantity_on_hand</td>
+                            <td>DECIMAL(15,4)</td>
+                            <td>Current stock</td>
+                        </tr>
+                        <tr>
+                            <td>days_to_expiry</td>
+                            <td>INT</td>
+                            <td>Days until expiry</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <h3 style="margin-top: 30px;">Mapping Tables</h3>
+
+                <div class="schema-table">
+                    <h4>map_product_sku (SKU Translation)</h4>
+                    <table>
+                        <tr>
+                            <th>Column</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                        <tr>
+                            <td>das_native_sku</td>
+                            <td>VARCHAR(100)</td>
+                            <td>Original SKU from DAS</td>
+                        </tr>
+                        <tr>
+                            <td>das_bu_id</td>
+                            <td>INT</td>
+                            <td>Which BU uses this SKU</td>
+                        </tr>
+                        <tr>
+                            <td><span class="fk">FK</span> clean_product_sk</td>
+                            <td>INT</td>
+                            <td>Mapped to unified product</td>
+                        </tr>
+                        <tr>
+                            <td>conversion_factor</td>
+                            <td>DECIMAL(10,4)</td>
+                            <td>UOM conversion multiplier</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Roadmap Section -->
+        <div id="roadmap" class="section">
+            <div class="card">
+                <h2>📅 Implementation Roadmap</h2>
+                <p style="font-size: 1.1em; margin-bottom: 20px;">
+                    Phased approach to ensure smooth transition and quick wins.
+                </p>
+
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <h3>Phase 1: Discovery (Week 1-2)</h3>
+                            <ul style="line-height: 1.8;">
+                                <li>Database schema exploration</li>
+                                <li>Identify BU separation column</li>
+                                <li>Extract product lists from all 5 BUs</li>
+                                <li>Quantify SKU overlap and mismatches</li>
+                                <li>Document current UOM practices</li>
+                            </ul>
+                            <span class="badge badge-warning">In Progress</span>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <h3>Phase 2: Master Data Build (Week 3-4)</h3>
+                            <ul style="line-height: 1.8;">
+                                <li>Create unified product master</li>
+                                <li>Build UOM conversion matrix</li>
+                                <li>Develop SKU mapping tables</li>
+                                <li>Consolidate customer/supplier masters</li>
+                                <li>Define location hierarchy (BU → Branch)</li>
+                            </ul>
+                            <span class="badge badge-warning">Upcoming</span>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <h3>Phase 3: ETL Development (Week 5-6)</h3>
+                            <ul style="line-height: 1.8;">
+                                <li>Write Python extraction scripts</li>
+                                <li>Implement transformation logic</li>
+                                <li>Build loading procedures</li>
+                                <li>Set up automated scheduling</li>
+                                <li>Test with historical data</li>
+                            </ul>
+                            <span class="badge badge-warning">Planned</span>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <h3>Phase 4: BI Dashboards (Week 7-8)</h3>
+                            <ul style="line-height: 1.8;">
+                                <li>Connect Looker Studio to analytics DB</li>
+                                <li>Build executive dashboards</li>
+                                <li>Create inventory health monitor</li>
+                                <li>Develop expiry alert system</li>
+                                <li>User acceptance testing</li>
+                            </ul>
+                            <span class="badge badge-warning">Planned</span>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <h3>Phase 5: Optimization (Week 9-10)</h3>
+                            <ul style="line-height: 1.8;">
+                                <li>Performance tuning</li>
+                                <li>Add cross-BU transfer recommendations</li>
+                                <li>Implement automated discount triggers</li>
+                                <li>Documentation and training</li>
+                                <li>Go-live and support</li>
+                            </ul>
+                            <span class="badge badge-warning">Future</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box" style="margin-top: 30px;">
+                    <h3>🚀 Quick Wins (First 2 Weeks)</h3>
+                    <ul style="font-size: 1.1em; line-height: 1.8;">
+                        <li><strong>SKU Overlap Report:</strong> Better understanding of how many products are duplicated across BUs</li>
+                        <li><strong>Supplier Consolidation Analysis:</strong> Identify top suppliers shared across BUs for better negotiation</li>
+                        <li><strong>Inventory Visibility Dashboard:</strong> First unified view of stock across all locations</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for details -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        function showSection(sectionId, element) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Add active class to clicked link
+            if(element) {
+                element.classList.add('active');
+            }
+            
+            // Prevent default anchor behavior
+            if(event) {
+                event.preventDefault();
+            }
+        }
+
+        function showProblemDetail(problem) {
+            const details = {
+                'sku': {
+                    title: 'SKU Mismatch Problem',
+                    content: `
+                        <h3>The Challenge</h3>
+                        <p>Each Business Unit maintains its own product catalog with independent SKU codes. The same physical product (e.g., "Milk 1 Liter") might have:</p>
+                        <ul style="line-height: 2; margin: 20px 0;">
+                            <li><strong>Mtech:</strong> SKU-MT-001</li>
+                            <li><strong>Mkitchen:</strong> SKU-MK-123</li>
+                            <li><strong>ShweZay:</strong> SKU-SZ-456</li>
+                            <li><strong>MTrading:</strong> SKU-B2B-789</li>
+                        </ul>
+                        <h3>Business Impact</h3>
+                        <ul style="line-height: 2;">
+                            <li>Cannot calculate total group-wide purchasing volume</li>
+                            <li>Missed opportunities for bulk supplier discounts</li>
+                            <li>Duplicate inventory across BUs</li>
+                            <li>Inaccurate group-level product performance analysis</li>
+                        </ul>
+                        <div class="highlight-box">
+                            <strong>Example:</strong> If all 5 BUs buy the same milk from the same supplier but use different SKUs, we cannot see that we're buying 10,000 liters total and negotiate a better price.
+                        </div>
+                    `
+                },
+                'uom': {
+                    title: 'Unit of Measure (UOM) Problem',
+                    content: `
+                        <h3>The Challenge</h3>
+                        <p>Different BUs sell the same product in different units without standardized conversion:</p>
+                        <ul style="line-height: 2; margin: 20px 0;">
+                            <li><strong>ShweZay (Retail):</strong> Sells individual pieces</li>
+                            <li><strong>MTrading (B2B):</strong> Sells cartons (12 pieces each)</li>
+                            <li><strong>Mkitchen (E-commerce):</strong> Sells multi-packs (6 pieces each)</li>
+                            <li><strong>Marathon Express:</strong> Tracks in pallets (100 cartons each)</li>
+                        </ul>
+                        <h3>Business Impact</h3>
+                        <ul style="line-height: 2;">
+                            <li>Inventory counts are incomparable across BUs</li>
+                            <li>Sales reports show different units, making trend analysis impossible</li>
+                            <li>Stock transfers between BUs require manual conversion</li>
+                            <li>Risk of overstocking or stockouts due to unit confusion</li>
+                        </ul>
+                        <div class="highlight-box">
+                            <strong>Example:</strong> ShweZay shows "100 units" and MTrading shows "10 units" - are they the same amount? Without UOM conversion, we can't tell!
+                        </div>
+                    `
+                },
+                'ap_ar': {
+                    title: 'Separate AP/AR Problem',
+                    content: `
+                        <h3>The Challenge</h3>
+                        <p>Accounts Payable and Accounts Receivable are tracked separately by each Business Unit, even when dealing with the same suppliers or customers.</p>
+                        <h3>Business Impact</h3>
+                        <ul style="line-height: 2; margin: 20px 0;">
+                            <li>Cannot see total exposure to a single supplier across all BUs</li>
+                            <li>Missed opportunities for consolidated payment negotiations</li>
+                            <li>Duplicate customer records with different credit terms</li>
+                            <li>Inaccurate group-wide cash flow forecasting</li>
+                            <li>Cannot leverage total purchase volume for better payment terms</li>
+                        </ul>
+                        <div class="highlight-box">
+                            <strong>Example:</strong> If MTrading owes Supplier X $50,000 and ShweZay owes the same supplier $30,000, we should be able to negotiate better terms knowing we owe $80,000 total. But separate AP records hide this opportunity.
+                        </div>
+                    `
+                },
+                'batch': {
+                    title: 'Limited Batch Traceability Problem',
+                    content: `
+                        <h3>The Challenge</h3>
+                        <p>While individual BUs track batches for expiry management, this information is siloed and not visible across the organization.</p>
+                        <h3>Business Impact</h3>
+                        <ul style="line-height: 2; margin: 20px 0;">
+                            <li>Cannot identify slow-moving expiring stock across BUs</li>
+                            <li>Missed opportunities for inter-BU transfers to prevent write-offs</li>
+                            <li>No group-wide FEFO (First Expired, First Out) optimization</li>
+                            <li>Risk of expired products reaching customers</li>
+                            <li>Inability to track product recalls across the entire supply chain</li>
+                        </ul>
+                        <div class="highlight-box">
+                            <strong>Example:</strong> ShweZay has 50 boxes of milk expiring in 15 days but only sells 2/day. MTrading has a large corporate order next week. Without cross-BU batch visibility, ShweZay's stock expires while MTrading buys fresh stock from the supplier.
+                        </div>
+                    `
+                },
+                'silos': {
+                    title: 'Data Silos Problem',
+                    content: `
+                        <h3>The Challenge</h3>
+                        <p>Each Business Unit operates as an independent entity with no visibility into other BUs' operations, inventory, or customer relationships.</p>
+                        <h3>Business Impact</h3>
+                        <ul style="line-height: 2; margin: 20px 0;">
+                            <li>Duplicate customers across BUs with different pricing</li>
+                            <li>Cannot identify cross-selling opportunities</li>
+                            <li>No group-wide inventory optimization</li>
+                            <li>Inconsistent customer experience across BUs</li>
+                            <li>Management lacks consolidated view for strategic decisions</li>
+                        </ul>
+                        <div class="highlight-box">
+                            <strong>Example:</strong> A customer buys from ShweZay retail and MTrading B2B, but we treat them as separate customers. We could offer them a unified loyalty program or volume discount, but siloed data prevents this.
+                        </div>
+                    `
+                },
+                'finance_focus': {
+                    title: 'Finance-Focused System Problem',
+                    content: `
+                        <h3>The Challenge</h3>
+                        <p>The DAS software was built by Mtech with emphasis on financial transactions (AP/AR, GL entries) but lacks operational workflows for ground-level inventory management.</p>
+                        <h3>Business Impact</h3>
+                        <ul style="line-height: 2; margin: 20px 0;">
+                            <li>Inventory adjustments recorded financially but not operationally</li>
+                            <li>No standardized codes for stock adjustments</li>
+                            <li>Limited traceability for operational issues (theft, damage, expiry)</li>
+                            <li>Ground staff workarounds create data quality issues</li>
+                            <li>Cannot distinguish between different types of inventory losses</li>
+                        </ul>
+                        <div class="highlight-box">
+                            <strong>Example:</strong> When ShweZay writes off $500 of damaged goods, DAS records the financial loss but not that it was 50 units of Product X damaged in transit showing as centralized adjustment transaction records. This prevents root cause analysis and process improvement.
+                        </div>
+                    `
+                }
+            };
+
+            const detail = details[problem];
+            document.getElementById('modalBody').innerHTML = `
+                <h2>${detail.title}</h2>
+                ${detail.content}
+            `;
+            document.getElementById('detailModal').style.display = 'block';
+        }
+
+        function showSolutionDetail(solution) {
+            const details = {
+                'unified_sku': {
+                    title: 'Unified SKU System Solution',
+                    content: `
+                        <h3>How It Works</h3>
+                        <p>We create a centralized product master with group-wide SKUs and mapping tables to translate each BU's native codes.</p>
+                        <h3>Implementation</h3>
+                        <ul style="line-height: 2; margin: 20px 0;">
+                            <li>Create <code>dim_product</code> table with clean, standardized SKUs</li>
+                            <li>Build <code>map_product_sku</code> table linking DAS SKUs to unified SKUs</li>
+                            <li>Include BU-specific SKU columns for easy reference</li>
+                            <li>Python ETL script maps transactions to unified SKUs during load</li>
+                        </ul>
+                        <h3>Benefits</h3>
+                        <ul style="line-height: 2;">
+                            <li>Group-wide product performance analysis</li>
+                            <li>Consolidated purchasing volume visibility</li>
+                            <li>Better supplier negotiation leverage</li>
+                            <li>Eliminate duplicate inventory purchases</li>
+                        </ul>
+                        <div class="highlight-box">
+                            <strong>Result:</strong> One product, one SKU, complete visibility across all 5 BUs.
+                        </div>
+                    `
+                },
+                'uom_matrix': {
+                    title: 'Standard UOM Conversion Solution',
+                    content: `
+                        <h3>How It Works</h3>
+                        <p>Implement a conversion matrix that standardizes all measurements to base units (pieces, kilograms, liters) for accurate comparisons.</p>
+                        <h3>Implementation</h3>
+                        <ul style="line-height: 2; margin: 20px 0;">
+                            <li>Define base UOM for each product category</li>
+                            <li>Create <code>dim_uom_conversion</code> table with conversion factors</li>
+                            <li>ETL process multiplies quantities by conversion factors</li>
+                            <li>All analytics use standardized base units</li>
+                        </ul>
+                        <h3>Example Conversion</h3>
+                        <table class="interactive-table" style="margin: 20px 0;">
+                            <tr>
+                                <th>BU</th>
+                                <th>Unit</th>
+                                <th>Conversion Factor</th>
+                                <th>Base Units</th>
+                            </tr>
+                            <tr>
+                                <td>ShweZay</td>
+                                <td>1 Piece</td>
+                                <td>1.0</td>
+                                <td>1 Piece</td>
+                            </tr>
+                            <tr>
+                                <td>MTrading</td>
+                                <td>1 Carton</td>
+                                <td>12.0</td>
+                                <td>12 Pieces</td>
+                            </tr>
+                            <tr>
+                                <td>Mkitchen</td>
+                                <td>1 Multi-pack</td>
+                                <td>6.0</td>
+                                <td>6 Pieces</td>
+                            </tr>
+                            <tr>
+                                <td>Marathon</td>
+                                <td>1 Pallet</td>
+                                <td>1200.0</td>
+                                <td>1200 Pieces</td>
+                            </tr>
+                        </table>
+                        <div class="highlight-box">
+                            <strong>Result:</strong> All inventory and sales data comparable across BUs in standardized units.
+                        </div>
+                    `
+                },
+                'consolidated_finance': {
+                    title: 'Consolidated AP/AR Solution',
+                    content: `
+                        <h3>How It Works</h3>
+                        <p>Unify financial records to show total exposure per supplier/customer across all BUs for better negotiation and cash flow management.</p>
+                        <h3>Implementation</h3>
+                        <ul style="line-height: 2; margin: 20px 0;">
+                            <li>Create unified <code>dim_supplier</code> and <code>dim_customer</code> masters</li>
+                            <li>Map BU-specific customer/supplier codes to unified IDs</li>
+                            <li>Build consolidated AP/AR fact tables</li>
+                            <li>Dashboard shows total balances by supplier/customer</li>
+                        </ul>
+                        <h3>Benefits</h3>
+                        <ul style="line-height: 2;">
+                            <li>Negotiate better payment terms with consolidated volume</li>
+                            <li>Identify duplicate customers across BUs</li>
+                            <li>Accurate group-wide cash flow forecasting</li>
+                            <li>Better credit risk assessment</li>
+                        </ul>
+                        <div class="highlight-box">
+                            <strong>Example Dashboard:</strong> "Supplier X: Total owed $80,000 (MTrading: $50K, ShweZay: $30K) - Negotiate 60-day terms instead of 30-day."
+                        </div>
+                    `
+                },
+                'batch_tracking': {
+                    title: 'Enhanced Batch Tracking Solution',
+                    content: `
+                        <h3>How It Works</h3>
+                        <p>Cross-BU batch visibility with FEFO (First Expired, First Out) logic and automated expiry alerts.</p>
+                        <h3>Implementation</h3>
+                        <ul style="line-height: 2; margin: 20px 0;">
+                            <li>Create <code>dim_batch</code> table with batch numbers and expiry dates</li>
+                            <li>Build <code>fact_inventory_batch</code> tracking stock by batch</li>
+                            <li>Calculate days-to-expiry for all batches</li>
+                            <li>Automated alerts for batches expiring within 30 days</li>
+                        </ul>
+                        <h3>Advanced Features</h3>
+                        <ul style="line-height: 2;">
+                            <li><strong>Cross-BU Transfer Recommendations:</strong> Suggest moving slow-moving expiring stock to high-velocity BUs</li>
+                            <li><strong>FEFO Picking Lists:</strong> Generate warehouse pick lists sorted by expiry date</li>
+                            <li><strong>Automated Discount Triggers:</strong> Calculate required discounts to clear expiring stock</li>
+                            <li><strong>Recall Management:</strong> Track affected batches across entire supply chain</li>
+                        </ul>
+                        <div class="highlight-box">
+                            <strong>Result:</strong> Reduce expiry write-offs by 40% through proactive cross-BU optimization.
+                        </div>
+                    `
+                },
+                'cross_bu': {
+                    title: 'Cross-BU Analytics Solution',
+                    content: `
+                        <h3>How It Works</h3>
+                        <p>Group-wide dashboards showing consolidated inventory, sales, and customer insights across all BUs.</p>
+                        <h3>Dashboard Portfolio</h3>
+                        <ul style="line-height: 2; margin: 20px 0;">
+                            <li><strong>Executive Overview:</strong> Group-wide KPIs and performance metrics</li>
+                            <li><strong>Inventory Health Monitor:</strong> Stock levels, aging, and expiry alerts across all locations</li>
+                            <li><strong>Supplier Consolidation:</strong> Total purchasing volume by supplier for negotiation</li>
+                            <li><strong>Customer 360:</strong> Unified customer view across all BUs</li>
+                            <li><strong>Ground Adjustments:</strong> Track and analyze inventory write-offs by reason</li>
+                        </ul>
+                        <h3>Benefits</h3>
+                        <ul style="line-height: 2;">
+                            <li>Data-driven strategic decisions</li>
+                            <li>Identify cross-selling opportunities</li>
+                            <li>Optimize inventory across the group</li>
+                            <li>Reduce operational inefficiencies</li>
+                        </ul>
+                        <div class="highlight-box">
+                            <strong>Result:</strong> Management has complete visibility into group operations for the first time.
+                        </div>
+                    `
+                },
+                'etl_pipeline': {
+                    title: 'Automated ETL Pipeline Solution',
+                    content: `
+                        <h3>How It Works</h3>
+                        <p>Python-based data extraction, transformation, and loading with daily synchronization from DAS to analytics DB.</p>
+                        <h3>ETL Process</h3>
+                        <ol style="line-height: 2; margin: 20px 0;">
+                            <li><strong>Extract:</strong> Python script connects to DAS PostgreSQL and pulls transaction data</li>
+                            <li><strong>Transform:</strong> Apply SKU mappings, UOM conversions, and data cleansing</li>
+                            <li><strong>Load:</strong> Insert clean data into analytics schema fact tables</li>
+                            <li><strong>Refresh:</strong> Update materialized views for BI tools</li>
+                        </ol>
+                        <h3>Technical Stack</h3>
+                        <ul style="line-height: 2;">
+                            <li><strong>Language:</strong> Python with Pandas for data manipulation</li>
+                            <li><strong>Database:</strong> PostgreSQL (free tier or low-cost DigitalOcean droplet)</li>
+                            <li><strong>Scheduling:</strong> Cron jobs or Airflow for automation</li>
+                            <li><strong>BI Tools:</strong> Looker Studio, Power BI, or Tableau</li>
+                        </ul>
+                        <h3>Sample ETL Code Structure</h3>
+                        <pre style="background: #000; padding: 15px; border-radius: 5px; overflow-x: auto;"><code># Extract from DAS
+das_data = extract_from_das('transactions')
+
+# Transform with mappings
+clean_data = apply_sku_mapping(das_data, map_product_sku)
+clean_data = apply_uom_conversion(clean_data, dim_uom_conversion)
+
+# Load to analytics
+load_to_analytics(clean_data, 'fact_sales')</code></pre>
+                        <div class="highlight-box">
+                            <strong>Result:</strong> Automated, reliable data pipeline requiring minimal manual intervention.
+                        </div>
+                    `
+                }
+            };
+
+            const detail = details[solution];
+            document.getElementById('modalBody').innerHTML = `
+                <h2>${detail.title}</h2>
+                ${detail.content}
+            `;
+            document.getElementById('detailModal').style.display = 'block';
+        }
+
+        function showComponentDetail(component) {
+            const details = {
+                'lookerstudio': {
+                    title: 'Looker Studio - Executive Dashboards',
+                    content: '<p>Interactive dashboards for management with drill-down capabilities, real-time data refresh, and mobile access.</p>'
+                },
+                'python': {
+                    title: 'Python Scripts - Data Processing',
+                    content: '<p>Automated data extraction, transformation, and loading using Python with Pandas library.</p>'
+                },
+                'excel': {
+                    title: 'Excel - Ad-hoc Reports',
+                    content: '<p>Flexible reporting tool for business users to create custom reports and analysis.</p>'
+                },
+                'dim_product': {
+                    title: 'dim_product - Product Master',
+                    content: '<p>Centralized product catalog with unified SKUs, categories, and base units of measure.</p>'
+                },
+                'dim_customer': {
+                    title: 'dim_customer - Customer Master',
+                    content: '<p>Unified customer records across all BUs with consolidated purchase history and credit information.</p>'
+                },
+                'dim_supplier': {
+                    title: 'dim_supplier - Supplier Master',
+                    content: '<p>Consolidated supplier information for group-wide procurement analysis and negotiation.</p>'
+                },
+                'fact_sales': {
+                    title: 'fact_sales - Sales Transactions',
+                    content: '<p>All sales transactions from all BUs with standardized units and unified product/customer references.</p>'
+                },
+                'fact_inventory': {
+                    title: 'fact_inventory - Inventory Levels',
+                    content: '<p>Current stock levels across all locations with batch tracking and expiry information.</p>'
+                },
+                'python_etl': {
+                    title: 'Python ETL Scripts',
+                    content: '<p>Automated data extraction, transformation, and loading using Python with Pandas library.</p>'
+                },
+                'mapping': {
+                    title: 'Mapping Tables',
+                    content: '<p>Translation layer that maps messy DAS SKUs to clean unified product codes.</p>'
+                },
+                'uom_conversion': {
+                    title: 'UOM Conversion',
+                    content: '<p>Standardizes all measurements to base units for accurate cross-BU comparisons.</p>'
+                },
+                'mtech': {
+                    title: 'Mtech - Software Development BU',
+                    content: '<p>Develops and maintains the DAS software. Source of operational data for software projects and internal operations.</p>'
+                },
+                'mkitchen': {
+                    title: 'Mkitchen - E-commerce BU',
+                    content: '<p>Online food and grocery delivery platform. High transaction volume with complex delivery logistics via Marathon Express.</p>'
+                },
+                'marathon': {
+                    title: 'Marathon Express - Delivery BU',
+                    content: '<p>Handles delivery operations for Mkitchen orders. Tracks inventory in transit and delivery performance metrics.</p>'
+                },
+                'mtrading': {
+                    title: 'MTrading - B2B Sales BU',
+                    content: '<p>Business-to-business sales operating in bulk quantities (cartons, pallets). Key for supplier consolidation opportunities.</p>'
+                },
+                'shwezay': {
+                    title: 'ShweZay - Retail Convenience Stores',
+                    content: '<p>Network of retail convenience stores selling individual units. Multiple branch locations requiring inventory optimization.</p>'
+                }
+            };
+
+            const detail = details[component];
+            if (detail) {
+                document.getElementById('modalBody').innerHTML = `
+                    <h2>${detail.title}</h2>
+                    ${detail.content}
+                `;
+                document.getElementById('detailModal').style.display = 'block';
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('detailModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
